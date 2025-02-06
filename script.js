@@ -61,6 +61,40 @@ function sunAltitude(date, time, latitudeDeg, longitudeDeg, timezoneOffset) {
     return altDeg + refractionDeg;
 }
 
+function displayChart() {
+  const ctx = document.getElementById('res-canvas').getContext('2d');
+
+  // Generate data points
+  const xValues = [];
+  const yValues = [];
+  for (let x = -10; x <= 10; x += 0.1) {
+      xValues.push(x);
+      yValues.push(Math.sin(x)); // Example function: sin(x)
+  }
+
+  // Create chart
+  new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: xValues,
+          datasets: [{
+              label: 'y = sin(x)',
+              data: yValues,
+              borderColor: 'blue',
+              borderWidth: 2,
+              fill: false,
+              pointRadius: 0
+          }]
+      },
+      options: {
+          scales: {
+              x: { title: { display: true, text: 'X' } },
+              y: { title: { display: true, text: 'Y' } }
+          }
+      }
+  });
+}
+
 function displaySunDegree() {
   let year = document.getElementById("year").value
   let month = document.getElementById("month").value
