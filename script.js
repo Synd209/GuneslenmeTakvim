@@ -74,17 +74,18 @@ function displaySunDegree() {
   
   let timezoneOffset = Math.round(longitude / 15)
   
+  document.getElementById("res-box").innerHTML = ""
   for (let hour = 8; hour <= 19; hour++) {
     let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0);
     let alt = sunAltitude(date, time, latitude, longitude, timezoneOffset);
-    console.log(`${hour.toString().padStart(2, '0')}:00         ${alt}`);
+    document.getElementById("res-box").innerHTML += `${hour.toString().padStart(2, '0')}:00 ${alt}` + "<br/>"
   }
 }
 
 // Set default values for year and such
 const today = new Date()
 document.getElementById("year").value = today.getFullYear()
-document.getElementById("month").value = today.getFullYear()
-document.getElementById("year").value = today.getFullYear()
+document.getElementById("month").value = today.getMonth()
+document.getElementById("day").value = today.getDay()
 
 
