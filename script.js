@@ -60,12 +60,17 @@ function sunAltitude(date, time, latitudeDeg, longitudeDeg, timezoneOffset) {
     return altDeg + refractionDeg;
 }
 
-function displaySunDegree(date, latitude, longitude, timezoneOffset=null) {
+function displaySunDegree() {
+  let year = document.getElementById("year")
+  let month = document.getElementById("month")
+  let day = document.getElementById("day")
   
+  let date = new Date(year, month, day) 
   
-  if (timezoneOffset === null){
-    timezoneOffset = Math.Floor(longitude / 15)
-  }
+  let latitude = document.getElementById("latitude")
+  let longitude = document.getElementById("longitude")
+  
+  let timezoneOffset = Math.round(longitude / 15)
   
   for (let hour = 8; hour <= 19; hour++) {
     let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0);
