@@ -57,27 +57,34 @@ function sunAltitude(date, time, latitudeDeg, longitudeDeg, timezoneOffset) {
     let R_arcmin = refractionCorrection(altDeg);
     let refractionDeg = R_arcmin / 60.0;
     
+    console.log(altDeg, refractionDeg)
     return altDeg + refractionDeg;
 }
 
 function displaySunDegree() {
-  let year = document.getElementById("year")
-  let month = document.getElementById("month")
-  let day = document.getElementById("day")
+  let year = document.getElementById("year").value
+  let month = document.getElementById("month").value
+  let day = document.getElementById("day").value
+  console.log(year)  
+  let date = new Date(year, month, day)
   
-  let date = new Date(year, month, day) 
   
-  let latitude = document.getElementById("latitude")
-  let longitude = document.getElementById("longitude")
+  let latitude = document.getElementById("latitude").value
+  let longitude = document.getElementById("longitude").value
   
   let timezoneOffset = Math.round(longitude / 15)
   
   for (let hour = 8; hour <= 19; hour++) {
     let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0);
     let alt = sunAltitude(date, time, latitude, longitude, timezoneOffset);
-    console.log(`${hour.toString().padStart(2, '0')}:00         ${alt.toFixed(1)}`);
+    console.log(`${hour.toString().padStart(2, '0')}:00         ${alt}`);
   }
 }
 
+// Set default values for year and such
+const today = new Date()
+document.getElementById("year").value = today.getFullYear()
+document.getElementById("month").value = today.getFullYear()
+document.getElementById("year").value = today.getFullYear()
 
 
