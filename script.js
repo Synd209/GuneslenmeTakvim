@@ -62,6 +62,7 @@ function sunAltitude(date, time, latitudeDeg, longitudeDeg, timezoneOffset) {
 
 function displaySunDegree(date, latitude, longitude, timezoneOffset=null) {
   
+  
   if (timezoneOffset === null){
     timezoneOffset = Math.Floor(longitude / 15)
   }
