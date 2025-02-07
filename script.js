@@ -101,7 +101,7 @@ function initialize() {
   const canvas = document.getElementById('res-canvas').getContext('2d');
   
   for(let i = 0; i <= 1440; i+=10){
-    xValues.push(i);
+    xValues.push(`${Math.floor(i/60)}:${i%60}`);
     yValues.push(0)
   }
   chart = new Chart(canvas, {
@@ -113,9 +113,19 @@ function initialize() {
               data: yValues,
               borderColor: 'yellow',
               borderWidth: 4,
-              fill: false,
+              fill: true,
               pointRadius: 0
           }]
+      },
+      options: {
+          responsive: false,
+          maintainAspectRatio: true,
+          scales: {
+              y: {
+                  min: 0,
+                  max: 90
+              }
+          }
       }
   });
 }
