@@ -121,12 +121,13 @@ function initialize() {
           maintainAspectRatio: true,
           scales: {
             x: {
+              type: "category",
               ticks: {
                 callback: function (value, index, values) {
-                  let time = values.split(":");
-                  let hours = parseInt(time[0]);
-                  let minutes = parseInt(time[1]);
-                  return minutes === 0 ? `${hours}:00` : ''; // Only show full hours
+                  let hours = Math.floor(value / 60);  // Convert minutes to hours
+                  let minutes = value % 60;            // Get the remainder for minutes
+                  return minutes === 0 ? `${hours}:00` : null; // Only show hour labels
+
                 }
               }
             },
