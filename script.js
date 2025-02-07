@@ -99,7 +99,6 @@ function displaySunDegree() {
   let year = document.getElementById("year").value
   let month = document.getElementById("month").value
   let day = document.getElementById("day").value
-  console.log(year)  
   let date = new Date(year, month, day)
   
   
@@ -108,12 +107,36 @@ function displaySunDegree() {
   
   let timezoneOffset = Math.round(longitude / 15)
   
-  document.getElementById("res-box").innerHTML = ""
-  for (let hour = 8; hour <= 19; hour++) {
-    let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0);
-    let alt = sunAltitude(date, time, latitude, longitude, timezoneOffset);
-    document.getElementById("res-box").innerHTML += `${hour.toString().padStart(2, '0')}:00 ${alt}` + "<br/>"
+  const ctx = document.getElementById('res-canvas').getContext('2d');
+
+  // Generate data points
+  const xValues = [];
+  const yValues = [];
+  for (let minute = 0; minute <= 1440; minute += 10) {
+      let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(minute / 60), minute % 60, 0);
+      let alt = sunAltitude(date, time, latitude, longitude, timezoneOffset);
+    
+      if (alt > 0){
+        xValues.push(minute);
+        yValues.push(alt);
+      }
   }
+
+  // Create chart
+  new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: xValues,
+          datasets: [{
+              label: 'Dereceler',
+              data: yValues,
+              borderColor: 'yellow',
+              borderWidth: 4,
+              fill: false,
+              pointRadius: 0
+          }]
+      }
+  });
 }
 
 // Set default values for year and such
