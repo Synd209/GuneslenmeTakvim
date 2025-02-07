@@ -76,7 +76,7 @@ function displaySunDegree() {
   // Generate data points
   const yValues = [];
   
-  for (let minute = 0; minute <= 1440; minute += 10) {
+  for (let minute = 0; minute <= 1440; minute++) {
       let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(minute / 60), minute % 60, 0);
       let alt = sunAltitude(date, time, latitude, longitude, timezoneOffset);
       
@@ -96,21 +96,20 @@ function displaySunDegree() {
 
 function initialize() {
   const xValues = [];
-  const yValues = [];
   
   const canvas = document.getElementById('res-canvas').getContext('2d');
   
-  for(let i = 0; i <= 1440; i+=10){
-    xValues.push(`${Math.floor(i/60)}:${i%60}`);
-    yValues.push(0)
-  }
   chart = new Chart(canvas, {
       type: 'line',
       data: {
-          labels: xValues,
+          labels: Array.from({ length: 24 * 60 }, (_, i) => { // Generate time labels for every minute
+            let hours = Math.floor(i / 60);
+            let minutes = i % 60;
+            return `${hours}:${minutes.toString().padStart(2, '0')}`; // Format as HH:MM
+        }),
           datasets: [{
               label: 'Dereceler',
-              data: yValues,
+              data: Array.from({ length: 24 * 60 }, () => {return 0;}),
               borderColor: 'yellow',
               borderWidth: 4,
               fill: true,
@@ -121,10 +120,20 @@ function initialize() {
           responsive: false,
           maintainAspectRatio: true,
           scales: {
-              y: {
-                  min: 0,
-                  max: 90
+            x: {
+              ticks: {
+                callback: function (value, index, values) {
+                  let time = values.split(":");
+                  let hours = parseInt(time[0]);
+                  let minutes = parseInt(time[1]);
+                  return minutes === 0 ? `${hours}:00` : ''; // Only show full hours
+                }
               }
+            },
+            y: {
+                min: 0,
+                max: 90
+            }
           }
       }
   });
