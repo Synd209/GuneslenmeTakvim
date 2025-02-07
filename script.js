@@ -127,4 +127,13 @@ document.getElementById("year").value = today.getFullYear()
 document.getElementById("month").value = today.getMonth()
 document.getElementById("day").value = today.getDay()
 
+// Set default values for coordinates
+navigator.geolocation.getCurrentPosition(setPos);
+
+function setPos(pos) {
+  document.getElementById("latitude").value = pos.coords.latitude
+  document.getElementById("longitude").value = pos.coords.longitude
+}
+
+
 
