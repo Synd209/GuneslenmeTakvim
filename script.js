@@ -57,44 +57,10 @@ function sunAltitude(date, time, latitudeDeg, longitudeDeg, timezoneOffset) {
     let R_arcmin = refractionCorrection(altDeg);
     let refractionDeg = R_arcmin / 60.0;
     
-    console.log(altDeg, refractionDeg)
     return altDeg + refractionDeg;
 }
 
-function displayChart() {
-  const ctx = document.getElementById('res-canvas').getContext('2d');
-
-  // Generate data points
-  const xValues = [];
-  const yValues = [];
-  for (let x = -10; x <= 10; x += 0.1) {
-      xValues.push(x);
-      yValues.push(Math.sin(x)); // Example function: sin(x)
-  }
-
-  // Create chart
-  new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: xValues,
-          datasets: [{
-              label: 'y = sin(x)',
-              data: yValues,
-              borderColor: 'blue',
-              borderWidth: 2,
-              fill: false,
-              pointRadius: 0
-          }]
-      },
-      options: {
-          scales: {
-              x: { title: { display: true, text: 'X' } },
-              y: { title: { display: true, text: 'Y' } }
-          }
-      }
-  });
-}
-
+let chart;
 function displaySunDegree() {
   let year = document.getElementById("year").value
   let month = document.getElementById("month").value
@@ -107,23 +73,38 @@ function displaySunDegree() {
   
   let timezoneOffset = Math.round(longitude / 15)
   
-  const ctx = document.getElementById('res-canvas').getContext('2d');
-
   // Generate data points
-  const xValues = [];
   const yValues = [];
+  
   for (let minute = 0; minute <= 1440; minute += 10) {
       let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(minute / 60), minute % 60, 0);
       let alt = sunAltitude(date, time, latitude, longitude, timezoneOffset);
+      
+      
     
-      if (alt > 0){
-        xValues.push(minute);
+      if (alt > 0)
         yValues.push(alt);
-      }
+      
+      else
+        yValues.push(0)
   }
 
-  // Create chart
-  new Chart(ctx, {
+  chart.data.datasets[0].data = yValues; // Update dataset
+  chart.update();
+  
+}
+
+function initialize() {
+  const xValues = [];
+  const yValues = [];
+  
+  const canvas = document.getElementById('res-canvas').getContext('2d');
+  
+  for(let i = 0; i <= 1440; i+=10){
+    xValues.push(i);
+    yValues.push(0)
+  }
+  chart = new Chart(canvas, {
       type: 'line',
       data: {
           labels: xValues,
@@ -138,6 +119,7 @@ function displaySunDegree() {
       }
   });
 }
+initialize()
 
 // Set default values for year and such
 const today = new Date()
