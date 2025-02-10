@@ -11,7 +11,7 @@
 }
 
 .long-box {
-  width: 75px;
+  width: 85px;
   height: 20px;
 }
 
@@ -44,4 +44,39 @@ video {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   padding: 15px;
+  margin: 15px;
+}
+
+/* Flex box */ 
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+}
+
+/* Bottom container (fills remaining space) */
+.bottom-container {
+  display: flex;
+  flex: 1; /* Takes up all remaining space */
+}
+
+.form-box {
+  height: 30%; /* Adjust as needed */
+}
+
+.calendar-box {
+  flex: 1
+}
+
+.graph-box {
+  flex: 2;
+}
+
+/* Bottom elements (equal height) */
+.bottom-item {
+  flex: 1;
+  background-color: #4CAF50;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white; /* Just for visibility */
 }

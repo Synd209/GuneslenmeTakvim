@@ -16,16 +16,28 @@
     <script src="/script.js" defer></script>
   </head>
   <body>
-    <div class="form-box main-box">
-      Kordinatlarınızı girin:
+    <div class="container">
+      
+      <div class="form-box main-box">
+        Kordinatlarınızı girin:
         <input type="text" class="long-box" id="latitude" placeholder="latitude">
         <input type="text" class="long-box" id="longitude" placeholder="longitude">
         <br>
-      Tarihi girin:
+        Tarihi girin:
         <input type="date" id="full-date">
         <br>
-      <button onclick="displaySunDegree()"> Hesapla! </button>
+        <button onclick="displaySunDegree()"> Hesapla! </button>
+      </div>
+
+      <div class="bottom-container">
+        <div class="calendar-box main-box">
+        
+        </div>
+        <div class="graph-box main-box">
+          <canvas id="res-canvas" style="size: 100% 100%"></canvas>
+        </div>
+      </div>
     </div>
-    <canvas id="res-canvas" style="width: 800px; height: 500px;"></canvas>
+    
   </body>
 </html>
