@@ -48,20 +48,11 @@ video {
 }
 
 /* Flex box */ 
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* Full viewport height */
-}
 
 /* Bottom container (fills remaining space) */
 .bottom-container {
   display: flex;
   flex: 1; /* Takes up all remaining space */
-}
-
-.form-box {
-  height: 20%; /* Adjust as needed */
 }
 
 .calendar-box {

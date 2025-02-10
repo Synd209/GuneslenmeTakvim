@@ -71,7 +71,7 @@ function displaySunDegree() {
   let date = new Date(full_date.value)
   
   
-  let timezoneOffset = 0;
+  let timezoneOffset = -date.getTimezoneOffset() / 60;
   let maxDegree = 0;
   let maxTime = new Date();
   
@@ -99,7 +99,7 @@ function displaySunDegree() {
   
   // Update res-box
   let resBox = document.getElementById("res-box");
-  resBox.innerHTML = `Güneşin en dik geldiği saat ${maxDegree} derece ile ${maxTime.getHours()}:${maxTime.getMinutes()}`
+  resBox.innerHTML = `Güneşin en dik geldiği saat ${Math.round(maxDegree * 1000) / 1000} derece ile ${maxTime.getHours()}:${maxTime.getMinutes()}`
 }
 
 function initialize() {

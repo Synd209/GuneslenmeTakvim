@@ -16,9 +16,8 @@
     <script src="/script.js" defer></script>
   </head>
   <body>
-    <div class="container">
-      
-      <div class="form-box main-box">
+    <div class="bottom-container">
+      <div class="calendar-box main-box">
         Kordinatlarınızı girin:
         <input type="text" class="long-box" id="latitude" placeholder="latitude">
         <input type="text" class="long-box" id="longitude" placeholder="longitude">
@@ -26,16 +25,12 @@
         Tarihi girin:
         <input type="date" id="full-date">
       </div>
-
-      <div class="bottom-container">
-        <div class="calendar-box main-box">
-        
-        </div>
-        <div class="graph-box main-box">
-          <canvas id="res-canvas" style="flex: 1"></canvas>
-          <p id="res-box"></p>
-        </div>
+      
+      <div class="graph-box main-box">
+        <canvas id="res-canvas" style="flex: 1"></canvas>
+        <p id="res-box"></p>
       </div>
+      
     </div>
     
   </body>
