@@ -136,17 +136,20 @@ function initialize() {
       }
   });
 }
+
 initialize()
 
 // Set default values for year and such
 const today = new Date()
-
+document.getElementById("full-date").value = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
+  
 // Set default values for coordinates
 navigator.geolocation.getCurrentPosition(setPos);
 
 function setPos(pos) {
   document.getElementById("latitude").value = pos.coords.latitude
   document.getElementById("longitude").value = pos.coords.longitude
+  displaySunDegree()
 }
 
 
