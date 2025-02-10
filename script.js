@@ -62,10 +62,7 @@ function sunAltitude(date, time, latitudeDeg, longitudeDeg, timezoneOffset) {
 
 let chart;
 function displaySunDegree() {
-  let year = document.getElementById("year").value
-  let month = document.getElementById("month").value
-  let day = document.getElementById("day").value
-  let date = new Date(year, month, day)
+  let date = new Date(document.getElementById("full-date").value)
   
   
   let latitude = document.getElementById("latitude").value
@@ -143,9 +140,6 @@ initialize()
 
 // Set default values for year and such
 const today = new Date()
-document.getElementById("year").value = today.getFullYear()
-document.getElementById("month").value = today.getMonth()
-document.getElementById("day").value = today.getDay()
 
 // Set default values for coordinates
 navigator.geolocation.getCurrentPosition(setPos);
