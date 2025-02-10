@@ -60,22 +60,25 @@ function sunAltitude(date, time, latitudeDeg, longitudeDeg, timezoneOffset) {
     return altDeg + refractionDeg;
 }
 
+
+// Get elements inside variables
+let full_date = document.getElementById("full-date");
+let latitude = document.getElementById("latitude");
+let longitude = document.getElementById("longitude");
 let chart;
+
 function displaySunDegree() {
   let date = new Date(full_date.value)
   
   
-  let latitude = latitude.value
-  let longitude = longitude.value
-  
-  let timezoneOffset = Math.round(longitude / 15)
+  let timezoneOffset = 0;
   
   // Generate data points
   const yValues = [];
   
   for (let minute = 0; minute <= 1440; minute++) {
       let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(minute / 60), minute % 60, 0);
-      let alt = sunAltitude(date, time, latitude, longitude, timezoneOffset);
+      let alt = sunAltitude(date, time, latitude.value, longitude.value, timezoneOffset);
       
       
     
@@ -135,31 +138,29 @@ function initialize() {
           }
       }
   });
+
+  // Set default values for year and such
+  const today = new Date()
+  full_date.value = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
+
+  // Set default values for coordinates
+  navigator.geolocation.getCurrentPosition(setPos);
+
+  function setPos(pos) {
+    latitude.value = pos.coords.latitude
+    longitude.value = pos.coords.longitude
+    displaySunDegree()
+  }
 }
 
+// initialize
 initialize()
 
-// Get elements inside variables
-let full_date = document.getElementById("full-date");
-let latitude = document.getElementById("latitude");
-let longitude = document.getElementById("longitude");
-
 // Add listeners for losing focus and update
-full_date.addEventListener()
+full_date.addEventListener("change", displaySunDegree)
+latitude.addEventListener("change", displaySunDegree)
+longitude.addEventListener("change", displaySunDegree)
 
-
-// Set default values for year and such
-const today = new Date()
-full_date.value = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
-  
-// Set default values for coordinates
-navigator.geolocation.getCurrentPosition(setPos);
-
-function setPos(pos) {
-  latitude.value = pos.coords.latitude
-  longitude.value = pos.coords.longitude
-  displaySunDegree()
-}
 
 
 
