@@ -62,11 +62,11 @@ function sunAltitude(date, time, latitudeDeg, longitudeDeg, timezoneOffset) {
 
 let chart;
 function displaySunDegree() {
-  let date = new Date(document.getElementById("full-date").value)
+  let date = new Date(full_date.value)
   
   
-  let latitude = document.getElementById("latitude").value
-  let longitude = document.getElementById("longitude").value
+  let latitude = latitude.value
+  let longitude = longitude.value
   
   let timezoneOffset = Math.round(longitude / 15)
   
@@ -139,16 +139,25 @@ function initialize() {
 
 initialize()
 
+// Get elements inside variables
+let full_date = document.getElementById("full-date");
+let latitude = document.getElementById("latitude");
+let longitude = document.getElementById("longitude");
+
+// Add listeners for losing focus and update
+full_date.addEventListener()
+
+
 // Set default values for year and such
 const today = new Date()
-document.getElementById("full-date").value = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
+full_date.value = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`
   
 // Set default values for coordinates
 navigator.geolocation.getCurrentPosition(setPos);
 
 function setPos(pos) {
-  document.getElementById("latitude").value = pos.coords.latitude
-  document.getElementById("longitude").value = pos.coords.longitude
+  latitude.value = pos.coords.latitude
+  longitude.value = pos.coords.longitude
   displaySunDegree()
 }
 
