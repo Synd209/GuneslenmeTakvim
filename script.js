@@ -72,6 +72,8 @@ function displaySunDegree() {
   
   
   let timezoneOffset = 0;
+  let maxDegree = 0;
+  let maxTime = new Date();
   
   // Generate data points
   const yValues = [];
@@ -80,7 +82,10 @@ function displaySunDegree() {
       let time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(minute / 60), minute % 60, 0);
       let alt = sunAltitude(date, time, latitude.value, longitude.value, timezoneOffset);
       
-      
+      if(alt > maxDegree){
+        maxDegree = alt;
+        maxTime = time
+      }
     
       if (alt > 0)
         yValues.push(alt);
@@ -92,6 +97,9 @@ function displaySunDegree() {
   chart.data.datasets[0].data = yValues; // Update dataset
   chart.update();
   
+  // Update res-box
+  let resBox = document.getElementById("res-box");
+  resBox.innerHTML = `Güneşin en dik geldiği saat ${maxDegree} derece ile ${maxTime.get}`
 }
 
 function initialize() {
