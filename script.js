@@ -99,7 +99,7 @@ function displaySunDegree() {
   
   // Update res-box
   let resBox = document.getElementById("res-box");
-  resBox.innerHTML = `Güneşin en dik geldiği saat ${maxDegree} derece ile ${maxTime.get}`
+  resBox.innerHTML = `Güneşin en dik geldiği saat ${maxDegree} derece ile ${maxTime.getHours()}:${maxTime.getMinutes()}`
 }
 
 function initialize() {
