@@ -3,35 +3,63 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <link rel="icon" href="assets/sun.png" />
 
     <title>Güneş Süresi Hesaplama</title>
 
     <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="style.css" />
 
     
     <!-- import the webpage's javascript file -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/script.js" defer></script>
+    <script src="script.js" defer></script>
   </head>
   <body>
-    <div class="bottom-container">
-      <div class="calendar-box main-box">
-        Kordinatlarınızı girin:
-        <input type="text" class="long-box" id="latitude" placeholder="latitude">
-        <input type="text" class="long-box" id="longitude" placeholder="longitude">
-        <br>
-        Tarihi girin:
-        <input type="date" id="full-date">
+    <div class="vertical-container">
+      <div class="horizontal-container">
+        <div class="vertical-container main-box">
+          <div>
+            Şehire göre kordinat aratın:
+            <input type="text" id="city-input" placeholder="Şehir ismi girin">
+            <p id="city-warn" class="warning-message">Şehir bulunamadı</p>
+          </div>
+          
+          <div>
+            Kordinatlarınızı girin:
+            <input type="number" class="long-box" id="latitude" placeholder="Enlem" min="-90" max="90" step="any">
+            <input type="number" class="long-box" id="longitude" placeholder="Boylam" min="-180" max="180" step="any">
+          </div>
+
+          <div>
+            Tarihi girin:
+            <input type="date" id="full-date">
+          </div>
+
+          <iframe src="Calendar.html" title="calendar" class="calendar"></iframe>
+        </div>
+        
+        <div class="graph-box main-box">
+          <div style="padding: 0 10%;">UTC <input id="UTC-box" class="mid-box"></input></div>
+          <canvas id="res-canvas" style="flex: 1;"></canvas>
+          <p id="res-box"></p>
+        </div>
       </div>
-      
-      <div class="graph-box main-box">
-        <canvas id="res-canvas" style="flex: 1"></canvas>
-        <p id="res-box"></p>
+
+      <div class="main-box space">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Spinning_globe.gif/640px-Spinning_globe.gif"
+          class="space-obj" id="earth">
+        <img src="assets/LightRays2-1.gif" class="space-obj" style="margin-left: 0;">
       </div>
-      
+
+      <div class="main-box vertical-container" style="aspect-ratio: 2;">
+        Yıl boyu güneş ışığının gün içinde geldiği en dik açı değerleri
+        <canvas id="year-canvas" style="flex: 1"></canvas>
+      </div>
     </div>
-    
+
+    <p style="font-size: 9pt; text-align: center;">
+      Açısal değerlerde ±2° sapma olabilir.
+    </p>
   </body>
 </html>
