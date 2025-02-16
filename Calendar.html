@@ -68,6 +68,7 @@
             }
 
             function resetAll() {
+                console.log("Resetting calendar");
                 Array.from(document.getElementById('calendar-list').children).forEach((item) => {
                     item.style.backgroundColor = 'white';
                 });
@@ -86,7 +87,7 @@
 
             // First day will be highlighted
             let item = addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'));
-            item.backgroundColor = 'lightgrey';
+            item.style.backgroundColor = 'lightgrey';
 
             for (let i = 1; i < numOfDays; i++) {
                 today.setDate(today.getDate() + 1);
