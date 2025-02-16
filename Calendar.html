@@ -20,11 +20,11 @@
                 <div class="horizontal-container">
                     <!-- Dates -->
                     <div class="vertical-container">
-                        <h3 class="no-margin" id="day">
+                        <h3 class="no-margin day">
                             Day
                         </h3>
         
-                        <p class="no-margin" id="date">
+                        <p class="no-margin date">
                             Date
                         </p>
                     </div>
@@ -59,15 +59,17 @@
                 // Function to add a new item to the list
                 const template = document.getElementById('list-item-template');
                 const clone = template.content.cloneNode(true);
-                clone.getElementById('day').textContent = day;
-                clone.getElementById('date').textContent = date;
+                const listItem = clone.querySelector('li');
+                listItem.id = date;
+                listItem.querySelector('.day').textContent = day;
+                listItem.querySelector('.date').textContent = date;
                 document.getElementById('calendar-list').appendChild(clone);
             }
 
             function changeDate(event) {
-                console.log(event);
-                let newDate = event.currentTarget.querySelector('#date').textContent;
-                parent.document.    getElementById('full-date').value = newDate;
+                let newDate = event.currentTarget.querySelector('.date').textContent;
+                console.log(event.currentTarget.id)
+                parent.document.getElementById('full-date').value = newDate;
                 parent.updateAll()
             }
 
