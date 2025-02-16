@@ -36,12 +36,12 @@
 
                     <!-- Times -->
                     <div class="vertical-container" style="align-items: flex-end;">
-                        <!-- add favicon -->
-                        <p class="no-margin">
+                        <!-- add favicon --> 
+                        <p class="no-margin sun-text">
                             Sunrise - Sunset
                         </p>
 
-                        <p class="no-margin">
+                        <p class="no-margin fifty-text">
                             50start - 50end 
                         </p>
                     </div>
@@ -63,12 +63,16 @@
                 listItem.id = date;
                 listItem.querySelector('.day').textContent = day;
                 listItem.querySelector('.date').textContent = date;
+                const [_1, _2, _3, _4, _5, fiftyStart, fiftyEnd, sunrise, sunset] = parent.sunDegrees(new Date(date));
+
+                listItem.querySelector('.sun-text').textContent = `${parent.format(sunrise, 't')} - ${parent.format(sunset, 't')}`;
+                listItem.querySelector('.fifty-text').textContent = `${parent.format(fiftyStart, 't')} - ${parent.format(fiftyEnd, 't')}`;
+
                 document.getElementById('calendar-list').appendChild(clone);
                 return listItem;
             }
 
             function resetAll() {
-                console.log("Resetting calendar");
                 Array.from(document.getElementById('calendar-list').children).forEach((item) => {
                     item.style.backgroundColor = 'white';
                 });
@@ -78,15 +82,38 @@
                 let currentTarget = event.currentTarget;
                 let newDate = currentTarget.querySelector('.date').textContent;
 
+                resetAll();
+
                 parent.document.getElementById('full-date').value = newDate;
                 parent.updateAll();
+            }
+
+            function updateHours() {
+                console.log("Updating hours");
+                // Function to update the hours of the list
+                const items = document.getElementById('calendar-list').children;
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    const date = item.querySelector('.date').textContent;
+                    const [_1, maxAngle, _3, _4, _5, fiftyStart, fiftyEnd, sunrise, sunset] = parent.sunDegrees(new Date(date));
+
+                    if(maxAngle > 0)
+                        item.querySelector('.sun-text').textContent = `☀️ ${parent.format(sunrise, 't')} - ${parent.format(sunset, 't')}`;
+                    else 
+                        item.querySelector('.sun-text').textContent = 'Güneş yok';
+
+                    if(maxAngle > 50)
+                        item.querySelector('.fifty-text').textContent = `🟣 ${parent.format(fiftyStart, 't')} - ${parent.format(fiftyEnd, 't')}`;
+                    else 
+                        item.querySelector('.fifty-text').textContent = '-';
+                }
             }
 
             const numOfDays = 7;
             let today = new Date();
 
             // First day will be highlighted
-            let item = addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'));
+            item = addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'))
             item.style.backgroundColor = 'lightgrey';
 
             for (let i = 1; i < numOfDays; i++) {
