@@ -10,12 +10,11 @@
     <!-- import the webpage's stylesheet -->
     <link rel="stylesheet" href="style.css" />
 
-    
     <!-- import the webpage's javascript file -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js" defer></script>
   </head>
-  <body>  
+  <body>
     <div class="vertical-container">
       <div class="dynamic-container">
         <div class="vertical-container main-box">
@@ -36,7 +35,7 @@
             <input type="date" id="full-date">
           </div>
 
-          <iframe src="Calendar.html" title="calendar" class="calendar"></iframe>
+          <iframe src="Calendar.html" title="calendar" class="calendar" id="calendar-iframe"></iframe>
         </div>
         
         <div class="graph-box main-box">
@@ -61,5 +60,23 @@
     <p style="font-size: 9pt; text-align: center;">
       Açısal değerlerde ±2° sapma olabilir.
     </p>
+
+    <script>
+        // Function to be called from the iframe
+        function updateAll() {
+            console.log('updateAll function called');
+            // Your update logic here
+        }
+
+        function numToDay(dayIndex) {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return days[dayIndex];
+        }
+
+        function format(date, formatString) {
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            return new Intl.DateTimeFormat('en-US', options).format(date);
+        }
+    </script>
   </body>
 </html>

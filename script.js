@@ -95,6 +95,8 @@ const longitude = document.getElementById("longitude");
 const earth = document.getElementById("earth");
 const city = document.getElementById("city-input");
 const UTCBox = document.getElementById("UTC-box");
+const calendarIframe = document.getElementById("calendar-iframe");
+
 
 let dayOfYear_var;
 let timezoneOffset;
@@ -250,10 +252,20 @@ function updateYearChart() {
   yearly_chart.update();
 }
 
+function updateCalendar() {
+    calendarIframe.contentWindow.resetAll();
+    let calendarItem = calendarIframe.contentDocument.getElementById(format(new Date(full_date.value), 'd'));
+
+    if(calendarItem === null) return;
+
+    calendarItem.style.backgroundColor = "lightgrey";
+}
+
 function updateAll() {
   displaySunDegree();
   changeEarthRotation();
   updateYearChart();
+  updateCalendar();
 }
 //#endregion
 

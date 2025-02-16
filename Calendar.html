@@ -16,7 +16,7 @@
     </head>
     <body>
         <template id="list-item-template">
-            <li class="calendar-item" onclick="changeDate(event)">
+            <li class="calendar-item" onclick="changeDate(event)" style="background-color: white;">
                 <div class="horizontal-container">
                     <!-- Dates -->
                     <div class="vertical-container">
@@ -51,7 +51,7 @@
         </template>
 
         <ul id="calendar-list">
-            
+            <!-- Will be filled with templates -->
         </ul>
 
         <script>
@@ -64,23 +64,36 @@
                 listItem.querySelector('.day').textContent = day;
                 listItem.querySelector('.date').textContent = date;
                 document.getElementById('calendar-list').appendChild(clone);
+                return clone;
+            }
+
+            function resetAll() {
+                Array.from(document.getElementById('calendar-list').children).forEach((item) => {
+                    console.log(item)
+                    item.style.backgroundColor = 'white';
+                });
             }
 
             function changeDate(event) {
-                let newDate = event.currentTarget.querySelector('.date').textContent;
-                console.log(event.currentTarget.id)
+                let currentTarget = event.currentTarget;
+                let newDate = currentTarget.querySelector('.date').textContent;
+
+                resetAll();
+
                 parent.document.getElementById('full-date').value = newDate;
-                parent.updateAll()
+                parent.updateAll();
             }
 
             const numOfDays = 7;
             let today = new Date();
-            for(let i = 0; i < numOfDays; i++) {
-                addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'));
+
+            // First day will be highlighted
+            addItem(parent.numToDay(today.getDay()), parent.format(today, 'd')).backgroundColor = 'lightgrey';
+
+            for (let i = 1; i < numOfDays; i++) {
                 today.setDate(today.getDate() + 1);
+                addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'));
             }
         </script>
     </body>
-
-    
 </html>
