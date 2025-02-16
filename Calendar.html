@@ -63,10 +63,17 @@
                 listItem.id = date;
                 listItem.querySelector('.day').textContent = day;
                 listItem.querySelector('.date').textContent = date;
-                const [_1, _2, _3, _4, _5, fiftyStart, fiftyEnd, sunrise, sunset] = parent.sunDegrees(new Date(date));
+                const [_1, maxAngle, _3, _4, _5, fiftyStart, fiftyEnd, sunrise, sunset] = parent.sunDegrees(new Date(date));
 
-                listItem.querySelector('.sun-text').textContent = `${parent.format(sunrise, 't')} - ${parent.format(sunset, 't')}`;
-                listItem.querySelector('.fifty-text').textContent = `${parent.format(fiftyStart, 't')} - ${parent.format(fiftyEnd, 't')}`;
+                if(maxAngle > 0)
+                    listItem.querySelector('.sun-text').textContent = `☀️ ${parent.format(sunrise, 't')} - ${parent.format(sunset, 't')}`;
+                else
+                    listItem.querySelector('.sun-text').textContent = 'Güneş yok';
+
+                if(maxAngle > 50)
+                    listItem.querySelector('.fifty-text').textContent = `🟣 ${parent.format(fiftyStart, 't')} - ${parent.format(fiftyEnd, 't')}`;
+                else
+                    listItem.querySelector('.fifty-text').textContent = 'UVB yok';
 
                 document.getElementById('calendar-list').appendChild(clone);
                 return listItem;
