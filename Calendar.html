@@ -64,7 +64,7 @@
                 listItem.querySelector('.day').textContent = day;
                 listItem.querySelector('.date').textContent = date;
                 document.getElementById('calendar-list').appendChild(clone);
-                return clone;
+                return listItem;
             }
 
             function resetAll() {
@@ -77,8 +77,6 @@
                 let currentTarget = event.currentTarget;
                 let newDate = currentTarget.querySelector('.date').textContent;
 
-                resetAll();
-
                 parent.document.getElementById('full-date').value = newDate;
                 parent.updateAll();
             }
@@ -87,7 +85,8 @@
             let today = new Date();
 
             // First day will be highlighted
-            addItem(parent.numToDay(today.getDay()), parent.format(today, 'd')).backgroundColor = 'lightgrey';
+            let item = addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'));
+            item.backgroundColor = 'lightgrey';
 
             for (let i = 1; i < numOfDays; i++) {
                 today.setDate(today.getDate() + 1);

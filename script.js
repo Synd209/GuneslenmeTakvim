@@ -69,7 +69,7 @@ function getDayOfYear(date) {
   const start = new Date(date.getFullYear(), 0, 0);
   const diff = date - start;
   const oneDay = 1000 * 60 * 60 * 24;
-  return Math.floor(diff / oneDay) + 284;
+  return Math.floor(diff / oneDay);
 }
 //#endregion
 
@@ -253,10 +253,13 @@ function updateYearChart() {
 }
 
 function updateCalendar() {
-    calendarIframe.contentWindow.resetAll();
+    if (typeof calendarIframe.contentWindow.resetAll === 'function') {
+        calendarIframe.contentWindow.resetAll();
+    }
+    
     let calendarItem = calendarIframe.contentDocument.getElementById(format(new Date(full_date.value), 'd'));
 
-    if(calendarItem === null) return;
+    if (calendarItem === null) return;
 
     calendarItem.style.backgroundColor = "lightgrey";
 }
@@ -456,7 +459,7 @@ function initialize() {
   latitude.value = 0;
   longitude.value = 0;
   changeEarthRotation();
-
+  
   navigator.geolocation.getCurrentPosition(setPos, fail);
 
   function setPos(pos) {
