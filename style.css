@@ -1,5 +1,3 @@
-/* a minimalist set of CSS resets */
-
 .mid-box {
    width: 50px;
    height: 20px;
@@ -63,6 +61,11 @@ video {
   flex: 1;
 }
 
+.dynamic-container {
+  display: flex;
+  flex: 1;
+}
+
 .vertical-container {
   display: flex;
   flex-direction: column;
@@ -110,9 +113,13 @@ input[type="number"]::-webkit-inner-spin-button,
   margin: 5px;
 }
 
+.no-margin {
+  margin: 0;
+}
+
 @media (max-width: 900px) {
   /* Stylesheet for mobile devices */
-  .horizontal-container {
+  .dynamic-container {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -132,3 +139,20 @@ input[type="number"]::-webkit-inner-spin-button,
     margin: 0;
   }
 }
+
+/*#region Calendar*/
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  overflow-y: scroll;
+  background-color: #f0f0f0;
+  font-size: 12px;
+}
+
+.calendar-item {
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+}
+/*#endregion*/

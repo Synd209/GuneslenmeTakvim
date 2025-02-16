@@ -1,37 +1,84 @@
 <!DOCTYPE html>
 <html>
     <head>
-
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scrollable List</title>
+        <link rel="stylesheet" href="style.css">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+        </style>
     </head>
-
     <body>
-        <ul>
-            <li>Home</li>
-            <li>About</li>
-            <li>Services</li>
-            <li>Portfolio</li>
-            <li>Contact</li>
-            <li>Blog</li>
-            <li>Careers</li>
-            <li>Support</li>
-            <li>FAQ</li>
-            <li>Extra Item 1</li>
-            <li>Extra Item 2</li>
-            <li>Extra Item 3</li>
-            <li>Extra Item 4</li>
-            <li>Home</li>
-            <li>About</li>
-            <li>Services</li>
-            <li>Portfolio</li>
-            <li>Contact</li>
-            <li>Blog</li>
-            <li>Careers</li>
-            <li>Support</li>
-            <li>FAQ</li>
-            <li>Extra Item 1</li>
-            <li>Extra Item 2</li>
-            <li>Extra Item 3</li>
-            <li>Extra Item 4</li>
+        <template id="list-item-template">
+            <li class="calendar-item" onclick="changeDate(event)">
+                <div class="horizontal-container">
+                    <!-- Dates -->
+                    <div class="vertical-container">
+                        <h3 class="no-margin" id="day">
+                            Day
+                        </h3>
+        
+                        <p class="no-margin" id="date">
+                            Date
+                        </p>
+                    </div>
+
+                    <!-- Weather -->
+                    <div>
+
+                    </div>
+
+                    <!-- Times -->
+                    <div class="vertical-container" style="align-items: flex-end;">
+                        <!-- add favicon -->
+                        <p class="no-margin">
+                            Sunrise - Sunset
+                        </p>
+
+                        <p class="no-margin">
+                            50start - 50end 
+                        </p>
+                    </div>
+                    
+                </div>       
+            </li>
+        </template>
+
+        <ul id="calendar-list">
+            
         </ul>
+
+        <script>
+            function addItem(day, date) {
+                // Function to add a new item to the list
+                const template = document.getElementById('list-item-template');
+                const clone = template.content.cloneNode(true);
+                clone.getElementById('day').textContent = day;
+                clone.getElementById('date').textContent = date;
+                document.getElementById('calendar-list').appendChild(clone);
+            }
+
+            function changeDate(event) {
+                console.log(event);
+                let newDate = event.currentTarget.querySelector('#date').textContent;
+                parent.document.    getElementById('full-date').value = newDate;
+                parent.updateAll()
+            }
+
+            const numOfDays = 7;
+            let today = new Date();
+            for(let i = 0; i < numOfDays; i++) {
+                addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'));
+                today.setDate(today.getDate() + 1);
+            }
+        </script>
     </body>
+
+    
 </html>

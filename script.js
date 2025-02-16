@@ -124,12 +124,62 @@ function getCoordinates() {
       .catch(error => console.error(error));
 }
 
-function displaySunDegree() {
-  const date = new Date(full_date.value);
+function sunDegrees(date) {
   let maxDegree = 0, minDegree = 90;
   let maxTime = new Date(), minTime = new Date();
+
   let fiftyStart = null, fiftyEnd = null;
   let sunrise = null, sunset = null;
+
+  let pastAlt = null;
+
+  const yValues = [];
+
+  for (let minute = 0; minute <= 1440; minute++) {
+    const time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(minute / 60), minute % 60, 0);
+    let alt = sunAltitude(date, time, latitude.value, longitude.value, timezoneOffset);
+    if (alt < 0) alt = 0;
+    yValues.push(alt);
+
+    if (alt > maxDegree) {
+        maxDegree = alt;
+        maxTime = time;
+    }
+
+    if (alt < minDegree) {
+        minDegree = alt;
+        minTime = time;
+    }
+
+    if (pastAlt === null) {
+        pastAlt = alt;
+        continue;
+    }
+
+    if (alt >= 50 && pastAlt <= 50) {
+        fiftyStart = time;
+    }
+
+    if (alt <= 50 && pastAlt >= 50) {
+        fiftyEnd = time;
+    }
+
+    if (alt > 0 && pastAlt <= 0) {
+        sunrise = time;
+    }
+
+    if (alt <= 0 && pastAlt > 0) {
+        sunset = time;
+    }
+
+    pastAlt = alt;
+  }
+
+  return [yValues, maxDegree, minDegree, maxTime, minTime, fiftyStart, fiftyEnd, sunrise, sunset];
+}
+
+function displaySunDegree() {
+  const date = new Date(full_date.value);
 
   function convertH2M(timeInHour) {
       const timeParts = timeInHour.split(":");
@@ -137,6 +187,7 @@ function displaySunDegree() {
       return Number(timeParts[0]) * 60 + Number(timeParts[1]);
   }
 
+  // Update timezone offset
   const first = UTCBox.value.at(0);
   const temp = (first == '-' ? -1 : 1) * convertH2M(UTCBox.value.slice((first == '-' || first == '+') ? 1 : 0));
   timezoneOffset = temp / 60;
@@ -151,61 +202,28 @@ function displaySunDegree() {
   }
 
   UTCBox.value = `${timezoneOffset >= 0 ? '+' : '-'}${hour}:${minute}`;
-
-  const yValues = [];
-  let pastAlt = null;
-  for (let minute = 0; minute <= 1440; minute++) {
-      const time = new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(minute / 60), minute % 60, 0);
-      let alt = sunAltitude(date, time, latitude.value, longitude.value, timezoneOffset);
-      if (alt < 0) alt = 0;
-      yValues.push(alt);
-
-      if (alt > maxDegree) {
-          maxDegree = alt;
-          maxTime = time;
-      }
-
-      if (alt < minDegree) {
-          minDegree = alt;
-          minTime = time;
-      }
-
-      if (pastAlt === null) {
-          pastAlt = alt;
-          continue;
-      }
-
-      if (alt >= 50 && pastAlt <= 50) {
-          fiftyStart = time;
-      }
-
-      if (alt <= 50 && pastAlt >= 50) {
-          fiftyEnd = time;
-      }
-
-      if (alt > 0 && pastAlt <= 0) {
-          sunrise = time;
-      }
-
-      if (alt <= 0 && pastAlt > 0) {
-          sunset = time;
-      }
-
-      pastAlt = alt;
-  }
-
+  
+  // Update charts  
+  let [yValues, maxDegree, minDegree, maxTime, minTime, fiftyStart, fiftyEnd, sunrise, sunset] = sunDegrees(date);
+  
   daily_chart.data.datasets[0].data = yValues;
   daily_chart.update();
 
   const resBox = document.getElementById("res-box");
   resBox.innerHTML = ((maxDegree <= 0) ? "" : `Güneşin en dik geldiği saat ${String(Math.round(maxDegree * 100) / 100).replace('.', ',')} derece ile ${format(maxTime, 't')}.` + "<br>") +
-      ((minDegree > 0) ? "Bugün gün boyu güneş göreceksiniz." :
-          (maxDegree <= 0) ? "Bugün tek günışığı sensin :)" :
-              (sunrise > sunset) ? `Güneş, ${format(sunset, 't')} ile batacak ve ${format(sunrise, 't')} ile tekrar doğacak.` :
-                  `Güneş saat ${format(sunrise, 't')} ile doğacak ve saat ${format(sunset, 't')} ile batacak.`) +
+      ((minDegree > 0) ?
+          "Bugün gün boyu güneş göreceksiniz." :
+          (maxDegree <= 0) ?
+              "Bugün tek günışığı sensin :)" :
+              (sunrise < sunset) ?
+                  `Güneş saat ${format(sunrise, 't')} ile doğacak ve saat ${format(sunset, 't')} ile batacak.`:
+                  `Güneş, ${format(sunset, 't')} ile batacak ve ${format(sunrise, 't')} ile tekrar doğacak.`) + 
       "<br>" +
-      ((maxDegree <= 50) ? "Maalesef bugün D vitamininden mahrum kalacaksın." :
-          `${format(fiftyStart, 't')} ile ${format(fiftyEnd, 't')} saatleri arasında maksimum UVB ışını alabilirsiniz.`);
+      ((maxDegree <= 50) ?
+          "Maalesef bugün D vitamininden mahrum kalacaksın." :
+          (fiftyStart < fiftyEnd) ?
+              `${format(fiftyStart, 't')} ile ${format(fiftyEnd, 't')} saatleri arasında maksimum UVB ışını alabilirsiniz.` :
+              `${format(fiftyEnd, 't')}'e kadar ve ${format(fiftyStart, 't')}'dan sonra maksimum UVB ışını alabilirsiniz.`);
 }
 
 function changeEarthRotation() {
@@ -253,6 +271,14 @@ function numToMonth(num, reverse = false) {
       "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
   ];
   return reverse ? months.indexOf(num) : months[num];
+}
+
+function numToDay(num) {
+  const days = [ // Pazar'dan başlıyor
+    "Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"
+  ]
+
+  return days[num];
 }
 
 //#region Initialize
@@ -430,26 +456,24 @@ function initialize() {
   function fail() {
       updateAll();
   }
+
+  // Add listeners for losing focus and update
+  full_date.addEventListener("change", updateAll);
+  latitude.addEventListener("change", updateAll);
+  longitude.addEventListener("change", updateAll);
+  UTCBox.addEventListener("change", displaySunDegree);
+  city.addEventListener("change", getCoordinates);
+
+  window.addEventListener("resize", () => {
+    const showLabel = showLabels();
+    daily_chart.options.scales.x.title.display = showLabel;
+    daily_chart.options.scales.y.title.display = showLabel;
+    daily_chart.update();
+
+    yearly_chart.options.scales.x.title.display = showLabel;
+    yearly_chart.options.scales.y.title.display = showLabel;
+    yearly_chart.update();
+  });
 }
 
-// Initialize
 initialize();
-
-// Add listeners for losing focus and update
-full_date.addEventListener("change", updateAll);
-latitude.addEventListener("change", updateAll);
-longitude.addEventListener("change", updateAll);
-UTCBox.addEventListener("change", displaySunDegree);
-city.addEventListener("change", getCoordinates);
-
-window.addEventListener("resize", () => {
-  const showLabel = showLabels();
-  daily_chart.options.scales.x.title.display = showLabel;
-  daily_chart.options.scales.y.title.display = showLabel;
-  daily_chart.update();
-
-  yearly_chart.options.scales.x.title.display = showLabel;
-  yearly_chart.options.scales.y.title.display = showLabel;
-  yearly_chart.update();
-});
-//#endregion
