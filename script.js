@@ -99,7 +99,6 @@ const city = document.getElementById("city-input");
 const UTCBox = document.getElementById("UTC-box");
 const calendarIframe = document.getElementById("calendar-iframe");
 
-
 let dayOfYear_var;
 let timezoneOffset;
 let daily_chart;
@@ -237,21 +236,21 @@ function changeEarthRotation() {
 }
 
 function updateYearChart() {
-  const yValues = [];
-  const date = new Date(full_date.value);
-  const year = date.getFullYear();
-  const lat = latitude.value;
+    const yValues = [];
+    const date = new Date(full_date.value);
+    const year = date.getFullYear();
+    const lat = latitude.value;
 
-  const maxVal = isLeapYear(year) ? 367 : 366;
-  for (let day = 1; day < maxVal; day++) {
-      const solarDec = getSolarDeclination(new Date(year, 0, day));
-      let maxSolarDegree = 90 - Math.abs(solarDec - lat);
-      if (maxSolarDegree < 0) maxSolarDegree = 0;
-      yValues.push(maxSolarDegree);
-  }
+    const maxVal = isLeapYear(year) ? 367 : 366;
+    for (let day = 1; day < maxVal; day++) {
+        const solarDec = getSolarDeclination(new Date(year, 0, day));
+        let maxSolarDegree = 90 - Math.abs(solarDec - lat);
+        if (maxSolarDegree < 0) maxSolarDegree = 0;
+        yValues.push(maxSolarDegree);
+    }
 
-  yearly_chart.data.datasets[0].data = yValues;
-  yearly_chart.update();
+    yearly_chart.data.datasets[0].data = yValues;
+    yearly_chart.update();
 }
 
 function updateCalendar() {
@@ -269,11 +268,47 @@ function updateCalendar() {
     calendarItem.style.backgroundColor = "lightgrey";
 }
 
+function updateWeather() {
+    return; // Not working
+    const lat = latitude.value
+    const lon = longitude.value;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode&timezone=auto&forecast_days=7`;
+
+    fetch(url)
+    .then(response => response.json())
+    .then(weatherForcast => {
+        console.log(weatherForcast)
+        let specificDate = format(new Date(full_date.value), 'd');
+        const forecastDay = weatherForcast.forecast.forecastday.find(day => day.date === specificDate);
+
+        if(forecastDay) {
+            console.log(`Hourly forecast for ${specificDate}:`);
+      
+            // Loop through hourly data for that day
+            forecastDay.hour.forEach(hour => {
+                console.log(`Time: ${hour.time}`);
+                console.log(`Temperature: ${hour.temp_c}°C`);
+                console.log(`Condition: ${hour.condition.text}`);
+                console.log('----------------------');
+            });
+        }
+
+        else {
+            // more than 7 days
+        }
+    })
+    .catch(error => console.error('Error fetching weather:', error));
+    
+}
+
 function updateAll() {
   displaySunDegree();
   changeEarthRotation();
   updateYearChart();
   updateCalendar();
+  updateWeather();
+  if(typeof calendarIframe.contentWindow.updateForecast == "function")
+    calendarIframe.contentWindow.updateForecast();
 }
 //#endregion
 
@@ -333,17 +368,30 @@ function initialize() {
               return `${hours}:${minutes.toString().padStart(2, '0')}`;
           }),
           datasets: [{
-              label: "Güneşin geliş açısı",
-              data: Array.from({ length: 24 * 60 }, () => 0),
-              borderColor: ctx => ctx.raw >= 50 ? 'lime' : 'grey',
-              borderWidth: 4,
-              fill: true,
-              pointRadius: 0,
-              pointHitRadius: 15,
-              segment: {
-                  borderColor: ctx => ctx.p0.raw >= 50 ? 'lime' : 'grey'
-              }
-          }]
+                label: "Güneşin geliş açısı",
+                data: Array.from({ length: 24 * 60 }, () => 0),
+                borderColor: ctx => ctx.raw >= 50 ? 'lime' : 'grey',
+                borderWidth: 4,
+                fill: true,
+                pointRadius: 0,
+                pointHitRadius: 15,
+                segment: {
+                    borderColor: ctx => ctx.p0.raw >= 50 ? 'lime' : 'grey'
+                }
+            },
+            {
+                label: "Sıcaklık",
+                data: Array.from({ length: 24 * 60 }, () => 0),
+                borderColor: 'red',
+                borderWidth: 4,
+                fill: false,
+                pointRadius: 0,
+                pointHitRadius: 15,
+                segment: {
+                    borderColor: 'red'
+                }
+            }
+          ]
       },
       options: {
           responsive: true,
@@ -527,3 +575,4 @@ function initialize() {
 }
 
 initialize();
+

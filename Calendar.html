@@ -19,7 +19,7 @@
             <li class="calendar-item" onclick="changeDate(event)" style="background-color: white; cursor: pointer;">
                 <div class="horizontal-container">
                     <!-- Dates -->
-                    <div class="vertical-container">
+                    <div class="vertical-container" style="flex: 2">
                         <h3 class="no-margin day">
                             Day
                         </h3>
@@ -30,12 +30,12 @@
                     </div>
 
                     <!-- Weather -->
-                    <div>
-
+                    <div style="flex: 1">
+                        <p class="no-margin weather"></p>
                     </div>
 
                     <!-- Times -->
-                    <div class="vertical-container" style="align-items: flex-end;">
+                    <div class="vertical-container" style="align-items: flex-end; flex: 2;">
                         <!-- add favicon --> 
                         <p class="no-margin sun-text">
                             Sunrise - Sunset
@@ -60,11 +60,14 @@
                 const template = document.getElementById('list-item-template');
                 const clone = template.content.cloneNode(true);
                 const listItem = clone.querySelector('li');
+
+                // Days
                 listItem.id = date;
                 listItem.querySelector('.day').textContent = day;
                 listItem.querySelector('.date').textContent = date;
                 const [_1, maxAngle, _3, _4, _5, fiftyStart, fiftyEnd, sunrise, sunset] = parent.sunDegrees(new Date(date));
 
+                // Sun angles
                 if(maxAngle > 0)
                     listItem.querySelector('.sun-text').textContent = `☀️ ${parent.format(sunrise, 't')} - ${parent.format(sunset, 't')}`;
                 else
@@ -116,6 +119,56 @@
                 }
             }
 
+            const weatherConditions = {
+                "0": "Açık gökyüzü",
+                "1": "Çoğunlukla açık",
+                "2": "Kısmen bulutlu",
+                "3": "Kapalı",
+                "45": "Sis",
+                "48": "Kırağı sis",
+                "51": "Çiselti: Hafif yoğunluk",
+                "53": "Çiselti: Orta yoğunluk",
+                "55": "Çiselti: Yoğun yoğunluk",
+                "56": "Donan çiselti: Hafif yoğunluk",
+                "57": "Donan çiselti: Yoğun yoğunluk",
+                "61": "Yağmur: Hafif yoğunluk",
+                "63": "Yağmur: Orta yoğunluk",
+                "65": "Yağmur: Şiddetli yoğunluk",
+                "66": "Donan yağmur: Hafif yoğunluk",
+                "67": "Donan yağmur: Şiddetli yoğunluk",
+                "71": "Kar: Hafif yoğunluk",
+                "73": "Kar: Orta yoğunluk",
+                "75": "Kar: Şiddetli yoğunluk",
+                "77": "Kar taneleri",
+                "80": "Yağmur sağanakları: Hafif yoğunluk",
+                "81": "Yağmur sağanakları: Orta yoğunluk",
+                "82": "Yağmur sağanakları: Şiddetli yoğunluk",
+                "85": "Kar sağanakları: Hafif yoğunluk",
+                "86": "Kar sağanakları: Şiddetli yoğunluk",
+                "95": "Fırtına: Hafif veya Orta yoğunlukta",
+                "96": "Fırtına ve hafif dolu",
+                "99": "Fırtına ve şiddetli dolu"
+            };
+
+            function updateForecast() {
+                let lat = parent.latitude.value;
+                let lon = parent.longitude.value;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto&forecast_days=7`;
+
+                console.log("Fetching daily forecast");
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    let calendar = document.getElementById('calendar-list');
+                    data.daily.time.forEach((date, index) => {
+                        let element = calendar.children[index];
+                        element.querySelector(".weather").textContent = weatherConditions[data.daily.weathercode[index]];
+                    });
+                })
+                .catch(error => console.error('Error fetching daily forecast:', error));
+            }
+
             const numOfDays = 7;
             let today = new Date();
 
@@ -127,6 +180,7 @@
                 today.setDate(today.getDate() + 1);
                 addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'));
             }
+
         </script>
     </body>
 </html>
