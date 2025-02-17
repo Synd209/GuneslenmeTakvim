@@ -31,7 +31,7 @@
 
                     <!-- Weather -->
                     <div style="flex: 1">
-                        <p class="no-margin weather"></p>
+                        <img class="no-margin weather"></img>
                     </div>
 
                     <!-- Times -->
@@ -120,34 +120,34 @@
             }
 
             const weatherConditions = {
-                "0": "Açık gökyüzü",
-                "1": "Çoğunlukla açık",
-                "2": "Kısmen bulutlu",
-                "3": "Kapalı",
+                "0": "Gunesli",
+                "1": "AzBulut",
+                "2": "ParcaliBulut",
+                "3": "TamBulut",
                 "45": "Sis",
-                "48": "Kırağı sis",
-                "51": "Çiselti: Hafif yoğunluk",
-                "53": "Çiselti: Orta yoğunluk",
-                "55": "Çiselti: Yoğun yoğunluk",
-                "56": "Donan çiselti: Hafif yoğunluk",
-                "57": "Donan çiselti: Yoğun yoğunluk",
-                "61": "Yağmur: Hafif yoğunluk",
-                "63": "Yağmur: Orta yoğunluk",
-                "65": "Yağmur: Şiddetli yoğunluk",
-                "66": "Donan yağmur: Hafif yoğunluk",
-                "67": "Donan yağmur: Şiddetli yoğunluk",
-                "71": "Kar: Hafif yoğunluk",
-                "73": "Kar: Orta yoğunluk",
-                "75": "Kar: Şiddetli yoğunluk",
-                "77": "Kar taneleri",
-                "80": "Yağmur sağanakları: Hafif yoğunluk",
-                "81": "Yağmur sağanakları: Orta yoğunluk",
-                "82": "Yağmur sağanakları: Şiddetli yoğunluk",
-                "85": "Kar sağanakları: Hafif yoğunluk",
-                "86": "Kar sağanakları: Şiddetli yoğunluk",
-                "95": "Fırtına: Hafif veya Orta yoğunlukta",
-                "96": "Fırtına ve hafif dolu",
-                "99": "Fırtına ve şiddetli dolu"
+                "48": "Sis",
+                "51": "Cise",
+                "53": "Cise",
+                "55": "Cise",
+                "56": "Cise",
+                "57": "Cise",
+                "61": "HafifYagmur",
+                "63": "HafifYagmur",
+                "65": "AgirYagmur",
+                "66": "Dolu",
+                "67": "Dolu",
+                "71": "HafifKar",
+                "73": "AgirKar",
+                "75": "AgirKar",
+                "77": "HafifKar",
+                "80": "SaganakYagmur",
+                "81": "SaganakYagmur",
+                "82": "SaganakYagmur",
+                "85": "SaganakKar",
+                "86": "SaganakKar",
+                "95": "Firtina",
+                "96": "Firtina",
+                "99": "Firtina"
             };
 
             function updateForecast() {
@@ -163,7 +163,7 @@
                     let calendar = document.getElementById('calendar-list');
                     data.daily.time.forEach((date, index) => {
                         let element = calendar.children[index];
-                        element.querySelector(".weather").textContent = weatherConditions[data.daily.weathercode[index]];
+                        element.querySelector(".weather").src = `WeatherSymbols\\${weatherConditions[data.daily.weathercode[index]]}.png`;
                     });
                 })
                 .catch(error => console.error('Error fetching daily forecast:', error));

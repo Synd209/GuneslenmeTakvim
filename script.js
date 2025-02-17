@@ -552,6 +552,7 @@ function initialize() {
   }
 
   function fail() {
+    console.log("failed to get location");
     updateAll();
   }
 
