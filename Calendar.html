@@ -16,7 +16,7 @@
     </head>
     <body>
         <template id="list-item-template">
-            <li class="calendar-item" onclick="changeDate(event)" style="background-color: white;">
+            <li class="calendar-item" onclick="changeDate(event)" style="background-color: white; cursor: pointer;">
                 <div class="horizontal-container">
                     <!-- Dates -->
                     <div class="vertical-container">
@@ -112,7 +112,7 @@
                     if(maxAngle > 50)
                         item.querySelector('.fifty-text').textContent = `🟣 ${parent.format(fiftyStart, 't')} - ${parent.format(fiftyEnd, 't')}`;
                     else 
-                        item.querySelector('.fifty-text').textContent = '-';
+                        item.querySelector('.fifty-text').textContent = 'UVB yok';
                 }
             }
 
