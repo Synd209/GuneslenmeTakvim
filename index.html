@@ -15,6 +15,12 @@
     <script src="script.js" defer></script>
   </head>
   <body>
+    <div id="popup" class="popup">
+      <div class="popup-content">
+        <span class="close-button" onclick="closePopup()">&times;</span>
+        <p> Vicudumuz  </p>
+      </div>
+    </div>
     <div class="vertical-container">
       <div class="dynamic-container">
         <div class="vertical-container main-box">
@@ -42,6 +48,7 @@
           <div style="padding: 0 10%;">UTC <input id="UTC-box" class="mid-box"></div>
           <canvas id="res-canvas" style="flex: 1;"></canvas>
           <p id="res-box"></p>
+          <p id="pup-upButton" class="button-text" onclick="openPopup();"> Bunlar ne anlama geliyor? </p>
         </div>
       </div>
 

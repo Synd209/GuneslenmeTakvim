@@ -301,6 +301,25 @@ function numToDay(num) {
   return days[num];
 }
 
+//#region Pop up
+function openPopup() {
+    console.log("opening popup");
+    document.getElementById("popup").style.display = "block";
+}
+
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+}
+
+// Close the pop-up when clicking outside of it
+window.onclick = function(event) {
+    const popup = document.getElementById("popup");
+    if (event.target == popup) {
+        popup.style.display = "none";
+    }
+}
+//#endregion
+
 //#region Initialize
 function initialize() {
   const daily_canvas = document.getElementById('res-canvas').getContext('2d');
@@ -316,7 +335,7 @@ function initialize() {
           datasets: [{
               label: "Güneşin geliş açısı",
               data: Array.from({ length: 24 * 60 }, () => 0),
-              borderColor: 'yellow',
+              borderColor: ctx => ctx.raw >= 50 ? 'lime' : 'grey',
               borderWidth: 4,
               fill: true,
               pointRadius: 0,
@@ -465,16 +484,27 @@ function initialize() {
   longitude.value = 0;
   changeEarthRotation();
 
-  navigator.geolocation.getCurrentPosition(setPos, fail);
+  if(city.value.length <= 0)  // Some browsers save the answers
+    navigator.geolocation.getCurrentPosition(setPos, fail);
+  else
+    getCoordinates();
 
   function setPos(pos) {
-      latitude.value = pos.coords.latitude;
-      longitude.value = pos.coords.longitude;
-      updateAll();
+    console.log('setting pos')
+    if(city.value.length <= 0) {
+        latitude.value = pos.coords.latitude;
+        longitude.value = pos.coords.longitude;
+    }
+
+    else {
+        getCoordinates();
+    }
+    
+    updateAll();
   }
 
   function fail() {
-      updateAll();
+    updateAll();
   }
 
   // Add listeners for losing focus and update
