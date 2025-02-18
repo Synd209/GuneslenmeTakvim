@@ -153,7 +153,7 @@
             function updateForecast() {
                 let lat = parent.latitude.value;
                 let lon = parent.longitude.value;
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto&forecast_days=7`;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&forecast_days=7`;
 
                 console.log("Fetching daily forecast");
                 fetch(url)
@@ -181,6 +181,7 @@
                 addItem(parent.numToDay(today.getDay()), parent.format(today, 'd'));
             }
 
+            updateForecast();
         </script>
     </body>
 </html>

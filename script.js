@@ -99,6 +99,11 @@ const city = document.getElementById("city-input");
 const UTCBox = document.getElementById("UTC-box");
 const calendarIframe = document.getElementById("calendar-iframe");
 
+let weatherCache = {
+    cache: undefined,
+    latitude: undefined,
+    longitude: undefined
+}
 let dayOfYear_var;
 let timezoneOffset;
 let daily_chart;
@@ -107,24 +112,24 @@ let yearly_chart;
 
 //#region Updating Functions
 function getCoordinates() {
-  if (city.value.length <= 0) {
-      document.getElementById("city-warn").style.display = "none";
-      return;
-  }
-  
-  fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city.value}`)
-      .then(response => response.json())
-      .then(data => {
-          if (data.length > 0) {
-              latitude.value = data[0].lat;
-              longitude.value = data[0].lon;
-              document.getElementById("city-warn").style.display = "none";
-              updateAll();
-          } else {
-              document.getElementById("city-warn").style.display = "block";
-          }
-      })
-      .catch(error => console.error(error));
+    if (city.value.length <= 0) {
+        document.getElementById("city-warn").style.display = "none";
+        return;
+    }
+    
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city.value}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                latitude.value = data[0].lat;
+                longitude.value = data[0].lon;
+                document.getElementById("city-warn").style.display = "none";
+                updateAll();
+            } else {
+                document.getElementById("city-warn").style.display = "block";
+            }
+        })
+        .catch(error => console.error(error));
 }
 
 function sunDegrees(date) {
@@ -268,47 +273,81 @@ function updateCalendar() {
     calendarItem.style.backgroundColor = "lightgrey";
 }
 
-function updateWeather() {
-    return; // Not working
+function updateWeather(weatherForcast) {
+    console.log(weatherForcast)
+    let specificDate = format(new Date(full_date.value), 'd');
+    const cloudData = [];
+    const tempData = [];
+    
+    let date_index;
+    for(let i = 0; i < weatherForcast.minutely_15.time.length; i += 96) {
+        if(weatherForcast.minutely_15.time[i].slice(0, 10) == specificDate) {
+            date_index = i;
+        }
+    }
+
+    if(date_index === undefined){
+        console.log("Couldn't find the date in the weather data");
+        daily_chart.data.datasets[1].data = null;
+        daily_chart.data.datasets[2].data = null;
+        daily_chart.update();
+        return;
+    }
+
+    for(let i = date_index; i < date_index + 96; i++){
+        let temperature = weatherForcast.minutely_15.temperature_2m[i];
+        let cloud_cover = weatherForcast.minutely_15.cloud_cover[i];
+        cloudData.push(cloud_cover);
+        tempData.push(temperature);
+
+        for(let j = 0; j < 14; j++){ // 15 minutes intervals
+            cloudData.push(null);
+            tempData.push(null);
+        }
+    }
+
+    daily_chart.data.datasets[1].data = cloudData;
+    daily_chart.data.datasets[2].data = tempData;
+    daily_chart.update();
+    return;
+}
+function getWeather() {
     const lat = latitude.value
     const lon = longitude.value;
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode&timezone=auto&forecast_days=7`;
+
+    // If we already have the data, don't fetch it again
+    if(weatherCache.latitude == lat && weatherCache.longitude == lon){
+        updateWeather(weatherCache.cache);
+        return;
+    }
+
+    // Gets data for 15 minutes intervals for the next 7 days
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&minutely_15=temperature_2m,weathercode,cloud_cover&timezone=GMT&forecast_days=7`;
+
+    weatherCache = {
+        cache: undefined,
+        latitude: lat,
+        longitude: lon
+    }
 
     fetch(url)
     .then(response => response.json())
-    .then(weatherForcast => {
-        console.log(weatherForcast)
-        let specificDate = format(new Date(full_date.value), 'd');
-        const forecastDay = weatherForcast.forecast.forecastday.find(day => day.date === specificDate);
-
-        if(forecastDay) {
-            console.log(`Hourly forecast for ${specificDate}:`);
-      
-            // Loop through hourly data for that day
-            forecastDay.hour.forEach(hour => {
-                console.log(`Time: ${hour.time}`);
-                console.log(`Temperature: ${hour.temp_c}°C`);
-                console.log(`Condition: ${hour.condition.text}`);
-                console.log('----------------------');
-            });
-        }
-
-        else {
-            // more than 7 days
-        }
+    .then(forecast => {
+        weatherCache.cache = forecast;
+        updateWeather(forecast);
     })
     .catch(error => console.error('Error fetching weather:', error));
     
 }
 
 function updateAll() {
-  displaySunDegree();
-  changeEarthRotation();
-  updateYearChart();
-  updateCalendar();
-  updateWeather();
-  if(typeof calendarIframe.contentWindow.updateForecast == "function")
-    calendarIframe.contentWindow.updateForecast();
+    displaySunDegree();
+    changeEarthRotation();
+    updateYearChart();
+    updateCalendar();
+    getWeather();
+    if(typeof calendarIframe.contentWindow.updateForecast == "function")
+        calendarIframe.contentWindow.updateForecast();
 }
 //#endregion
 
@@ -357,17 +396,17 @@ window.onclick = function(event) {
 
 //#region Initialize
 function initialize() {
-  const daily_canvas = document.getElementById('res-canvas').getContext('2d');
+    const daily_canvas = document.getElementById('res-canvas').getContext('2d');
 
-  daily_chart = new Chart(daily_canvas, {
-      type: 'line',
-      data: {
-          labels: Array.from({ length: 24 * 60 }, (_, i) => {
-              const hours = Math.floor(i / 60);
-              const minutes = i % 60;
-              return `${hours}:${minutes.toString().padStart(2, '0')}`;
-          }),
-          datasets: [{
+    daily_chart = new Chart(daily_canvas, {
+        type: 'line',
+        data: {
+            labels: Array.from({ length: 24 * 60 }, (_, i) => {
+                const hours = Math.floor(i / 60);
+                const minutes = i % 60;
+                return `${hours}:${minutes.toString().padStart(2, '0')}`;
+            }),
+            datasets: [{
                 label: "Güneşin geliş açısı",
                 data: Array.from({ length: 24 * 60 }, () => 0),
                 borderColor: ctx => ctx.raw >= 50 ? 'lime' : 'grey',
@@ -377,7 +416,21 @@ function initialize() {
                 pointHitRadius: 15,
                 segment: {
                     borderColor: ctx => ctx.p0.raw >= 50 ? 'lime' : 'grey'
-                }
+                },
+                yAxisID: 'y'
+            },
+            {
+                label: "Bulut Yüzdesi",
+                data: Array.from({ length: 24 * 60 }, () => 0),
+                borderColor: 'blue',
+                borderWidth: 4,
+                fill: false,
+                pointRadius: 0,
+                pointHitRadius: 15,
+                segment: {
+                    borderColor: 'blue'
+                },
+                yAxisID: 'y1'
             },
             {
                 label: "Sıcaklık",
@@ -389,51 +442,92 @@ function initialize() {
                 pointHitRadius: 15,
                 segment: {
                     borderColor: 'red'
+                },
+                yAxisID: 'y2'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            spanGaps: true,
+            scales: {
+                x: {
+                    title: {
+                        display: showLabels(),
+                        text: "Saat"
+                    },
+                    type: "category",
+                    ticks: {
+                        callback: function (value) {
+                            const hours = Math.floor(value / 60);
+                            const minutes = value % 60;
+                            return minutes === 0 ? `${hours}:00` : null;
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: showLabels(),
+                        text: "Açı"
+                    },
+                    min: 0,
+                    max: 90,
+                    ticks: {
+                        callback: value => `${value}°`
+                    }
+                },
+                y1: {
+                    position: 'right',
+                    title: {
+                    display: showLabels(),
+                    text: 'Bulut'
+                    },
+                    min: 0,
+                    max: 100,
+                    ticks: {
+                        callback: value => `%${value}`
+                    },
+                    grid: {
+                        drawOnChartArea: false // ✅ This hides grid lines for y1
+                    }
+                },
+                y2: {
+                    type: 'linear',
+                    position: 'right',
+                    title: {
+                    display: showLabels(),
+                    text: 'Sıcaklık'
+                    },
+                    ticks: {
+                        callback: value => `${value}℃`
+                    },
+                    grid: {
+                        drawOnChartArea: false // Hides y2 grid
+                    },
+                    offset: true // Moves axis slightly to prevent overlap
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: context => {
+                            let value = Math.round(context.raw * 100) / 100; // Round to 2 decimal places
+                
+                            switch (context.datasetIndex) {
+                                case 0:
+                                    return `${value.toString().replace('.', ',')}°`;
+                                case 1:
+                                    return `${value.toString().replace('.', ',')}%`;
+                                case 2:
+                                    return `${value.toString().replace('.', ',')}°C`;
+                                default:
+                                    return `${value}`; // Default format for other datasets
+                            }
+                        }
+                    }
                 }
             }
-          ]
-      },
-      options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          scales: {
-              x: {
-                  title: {
-                      display: showLabels(),
-                      text: "Saat"
-                  },
-                  type: "category",
-                  ticks: {
-                      callback: function (value) {
-                          const hours = Math.floor(value / 60);
-                          const minutes = value % 60;
-                          return minutes === 0 ? `${hours}:00` : null;
-                      }
-                  }
-              },
-              y: {
-                  title: {
-                      display: showLabels(),
-                      text: "Açı"
-                  },
-                  min: 0,
-                  max: 90,
-                  ticks: {
-                      callback: value => `${value}°`
-                  }
-              }
-          },
-          plugins: {
-              legend: {
-                  display: false
-              },
-              tooltip: {
-                  callbacks: {
-                      label: context => (Math.round(context.raw * 100) / 100 + '°').replace('.', ',')
-                  }
-              }
-          }
-      }
+        }
   });
 
   const yearly_canvas = document.getElementById('year-canvas').getContext('2d');
