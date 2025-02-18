@@ -218,7 +218,7 @@ function displaySunDegree() {
   daily_chart.update();
 
   const resBox = document.getElementById("res-box");
-  resBox.innerHTML = ((maxDegree <= 0) ? "" : `Güneşin en dik geldiği saat ${String(Math.round(maxDegree * 100) / 100).replace('.', ',')} derece ile ${format(maxTime, 't')}.` + "<br>") +
+  resBox.innerHTML = ((maxDegree <= 0) ? "" : `Güneş ışınlarının en dik geldiği saat ${String(Math.round(maxDegree * 100) / 100).replace('.', ',')} derece ile ${format(maxTime, 't')}.` + "<br>") +
       ((minDegree > 0) ?
           "Bugün gün boyu güneş göreceksiniz." :
           (maxDegree <= 0) ?
@@ -294,6 +294,8 @@ function updateWeather(weatherForcast) {
         return;
     }
 
+    date_index -= Math.trunc(timezoneOffset * 4); // Adjust for timezone
+
     for(let i = date_index; i < date_index + 96; i++){
         let temperature = weatherForcast.minutely_15.temperature_2m[i];
         let cloud_cover = weatherForcast.minutely_15.cloud_cover[i];
@@ -311,6 +313,7 @@ function updateWeather(weatherForcast) {
     daily_chart.update();
     return;
 }
+
 function getWeather() {
     const lat = latitude.value
     const lon = longitude.value;
@@ -322,7 +325,7 @@ function getWeather() {
     }
 
     // Gets data for 15 minutes intervals for the next 7 days
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&minutely_15=temperature_2m,weathercode,cloud_cover&timezone=GMT&forecast_days=7`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&minutely_15=temperature_2m,weathercode,cloud_cover&timezone=GMT&forecast_days=7&past_days=1`;
 
     weatherCache = {
         cache: undefined,
@@ -333,6 +336,7 @@ function getWeather() {
     fetch(url)
     .then(response => response.json())
     .then(forecast => {
+        console.log('Weather fetched:', forecast);
         weatherCache.cache = forecast;
         updateWeather(forecast);
     })
