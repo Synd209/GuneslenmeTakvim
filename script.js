@@ -647,6 +647,8 @@ function initialize() {
 
   function fail() {
     console.log("failed to get location");
+    city.value = "Istanbul"; // Default city
+    getCoordinates();   
     updateAll();
   }
 
