@@ -667,12 +667,12 @@ function initialize() {
     const showLabel = showLabels();
     daily_chart.options.scales.x.title.display = showLabel;
     daily_chart.options.scales.y.title.display = showLabel;
+    daily_chart.options.scales.y1.title.display = showLabel;
+    daily_chart.options.scales.y2.title.display = showLabel;
     daily_chart.update();
 
     yearly_chart.options.scales.x.title.display = showLabel;
     yearly_chart.options.scales.y.title.display = showLabel;
-    yearly_chart.options.scales.y1.title.display = showLabel;
-    yearly_chart.options.scales.y2.title.display = showLabel;
     yearly_chart.update();
   });
 }
