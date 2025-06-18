@@ -549,10 +549,10 @@ function dayOfYear(year, month, day) {
             datasets: [{
                 label: "Güneşin geliş açısı",
                 data: Array.from({ length: 365 }, () => 0),
-                borderColor: ctx => ctx.dataIndex == dayOfYear_var ? "purple" : "yellow",
+                borderColor: ctx => ctx.dataIndex == dayOfYear_var - 1 ? "purple" : "yellow",
                 borderWidth: 4,
                 fill: true,
-                pointRadius: ctx => ctx.dataIndex == dayOfYear_var ? 2 : 0,
+                pointRadius: ctx => ctx.dataIndex == dayOfYear_var - 1 ? 2 : 0,
                 pointHitRadius: 15
             }]
         },
